@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "date": "2025-01-01",
+    "teamA": [1, 3, 5, 7],
+    "teamB": [2, 4, 6, 8],
+    "winner": "teamA",
+    "potm": 3,
+    "gotm": 7,
+    "score": {
+      "teamA": 3,
+      "teamB": 2
+    }
+  }
+]
