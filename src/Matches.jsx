@@ -1,37 +1,115 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import players from "./data/players.json"; // Import player data
 import styles from "./styles/matches.module.scss"; // Import SCSS file
+import { useState } from "react";
 
-const UpdateMatchForm = () => {
-  const schema = yup.object().shape({
-    date: yup
-      .date()
-      .required("Date is required")
-      .min(new Date("2025-01-01"), "Date must be after 2025-01-01"),
-    "score.teamA": yup
+const schema = yup.object().shape({
+  date: yup
+    .date()
+    .required("Date is required")
+    .min(new Date("2025-01-01"), "Date must be after 2025-01-01"),
+  teamA: yup
+    .array()
+    .min(8, "At least 8 players must be selected for Team A")
+    .max(8, "Only 8 players can be selected for Team A"),
+  teamB: yup
+    .array()
+    .min(8, "At least 8 players must be selected for Team B")
+    .max(8, "Only 8 players can be selected for Team B"),
+  score: yup.object().shape({
+    teamA: yup
       .number()
       .required("Score for Team A is required")
       .min(0, "Score cannot be negative"),
-    "score.teamB": yup
+    teamB: yup
       .number()
       .required("Score for Team B is required")
       .min(0, "Score cannot be negative"),
-    players: yup.array().min(1, "At least one player must be selected"),
-    winner: yup.string().required("Winner is required"),
-  });
+  }),
+  playerOfTheMatch: yup.string().required("Player of the Match is required"),
+  goalOfTheMatch: yup.string().required("Goal of the Match is required"),
+});
 
+const UpdateMatchForm = () => {
   const {
     register,
     handleSubmit,
+    setValue,
+    getValues,
+    control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {
+      teamA: [],
+      teamB: [],
+      score: { teamA: 0, teamB: 0 },
+    },
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const [selectedTeamA, setSelectedTeamA] = useState([]);
+  const [selectedTeamB, setSelectedTeamB] = useState([]);
+
+  const handleTeamSelection = (team, playerId) => {
+    let updatedTeam = [...(team === "teamA" ? selectedTeamA : selectedTeamB)];
+
+    if (updatedTeam.includes(playerId)) {
+      updatedTeam = updatedTeam.filter((id) => id !== playerId);
+    } else if (updatedTeam.length < 8) {
+      updatedTeam.push(playerId);
+    }
+
+    if (team === "teamA") {
+      setSelectedTeamA(updatedTeam);
+      setValue("teamA", updatedTeam);
+    } else {
+      setSelectedTeamB(updatedTeam);
+      setValue("teamB", updatedTeam);
+    }
+  };
+
+  const onSubmit = async (data) => {
+    // Determine the winner based on the score
+    let winner = "draw";
+    if (data.score.teamA > data.score.teamB) {
+      winner = "teamA";
+    } else if (data.score.teamA < data.score.teamB) {
+      winner = "teamB";
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/matches", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date: data.date,
+          teamA: data.teamA.map(Number),
+          teamB: data.teamB.map(Number),
+          winner: winner, // Automatically determined
+          potm: Number(data.playerOfTheMatch),
+          gotm: Number(data.goalOfTheMatch),
+          score: {
+            teamA: Number(data.score.teamA),
+            teamB: Number(data.score.teamB),
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add match");
+      }
+
+      const result = await response.json();
+      console.log("Match added successfully:", result);
+      alert("Match added successfully!");
+    } catch (error) {
+      console.error("Error submitting match:", error);
+      alert("Error adding match. Please try again.");
+    }
   };
 
   return (
@@ -46,7 +124,7 @@ const UpdateMatchForm = () => {
         <input
           type="date"
           id="date"
-          className={`${styles.input} ${errors.date ? styles.errorInput : ""}`}
+          className={styles.input}
           {...register("date")}
         />
         {errors.date && <p className={styles.error}>{errors.date.message}</p>}
@@ -54,78 +132,53 @@ const UpdateMatchForm = () => {
 
       {/* Team A Selection */}
       <div className={styles.field}>
-        <label htmlFor="teamA" className={styles.label}>
-          Select Players for Team A
-        </label>
-        <select
-          id="teamA"
-          className={`${styles.select} ${
-            errors.players ? styles.errorInput : ""
-          }`}
-          {...register("teamA", {
-            required: "Please select at least one player for Team A",
-          })}
-          multiple
-        >
+        <label className={styles.label}>Select Players for Team A</label>
+        <div className={styles.checkboxGroup}>
           {players.map((player) => (
-            <option key={player.id} value={player.id}>
-              {player.name}
-            </option>
+            <div key={player.id} className={styles.checkboxField}>
+              <input
+                type="checkbox"
+                id={`teamA-${player.id}`}
+                checked={selectedTeamA.includes(player.id)}
+                onChange={() => handleTeamSelection("teamA", player.id)}
+              />
+              <label
+                htmlFor={`teamA-${player.id}`}
+                className={styles.checkboxLabel}
+              >
+                {player.name}
+              </label>
+            </div>
           ))}
-        </select>
-        {errors.players && (
-          <p className={styles.error}>{errors.players.message}</p>
-        )}
+        </div>
+        {errors.teamA && <p className={styles.error}>{errors.teamA.message}</p>}
       </div>
 
       {/* Team B Selection */}
       <div className={styles.field}>
-        <label htmlFor="teamB" className={styles.label}>
-          Select Players for Team B
-        </label>
-        <select
-          id="teamB"
-          className={`${styles.select} ${
-            errors.players ? styles.errorInput : ""
-          }`}
-          {...register("teamB", {
-            required: "Please select at least one player for Team B",
-          })}
-          multiple
-        >
+        <label className={styles.label}>Select Players for Team B</label>
+        <div className={styles.checkboxGroup}>
           {players.map((player) => (
-            <option key={player.id} value={player.id}>
-              {player.name}
-            </option>
+            <div key={player.id} className={styles.checkboxField}>
+              <input
+                type="checkbox"
+                id={`teamB-${player.id}`}
+                checked={selectedTeamB.includes(player.id)}
+                onChange={() => handleTeamSelection("teamB", player.id)}
+              />
+              <label
+                htmlFor={`teamB-${player.id}`}
+                className={styles.checkboxLabel}
+              >
+                {player.name}
+              </label>
+            </div>
           ))}
-        </select>
-        {errors.players && (
-          <p className={styles.error}>{errors.players.message}</p>
-        )}
+        </div>
+        {errors.teamB && <p className={styles.error}>{errors.teamB.message}</p>}
       </div>
 
-      {/* Winner Selection */}
-      <div className={styles.field}>
-        <label htmlFor="winner" className={styles.label}>
-          Select Winner
-        </label>
-        <select
-          id="winner"
-          className={`${styles.select} ${
-            errors.winner ? styles.errorInput : ""
-          }`}
-          {...register("winner")}
-        >
-          <option value="">Select Winner</option>
-          <option value="teamA">Team A</option>
-          <option value="teamB">Team B</option>
-        </select>
-        {errors.winner && (
-          <p className={styles.error}>{errors.winner.message}</p>
-        )}
-      </div>
-
-      {/* Team A Score */}
+      {/* Score Fields */}
       <div className={styles.field}>
         <label htmlFor="teamAScore" className={styles.label}>
           Team A Score
@@ -133,17 +186,14 @@ const UpdateMatchForm = () => {
         <input
           type="number"
           id="teamAScore"
-          className={`${styles.input} ${
-            errors["score.teamA"] ? styles.errorInput : ""
-          }`}
+          className={styles.input}
           {...register("score.teamA")}
         />
-        {errors["score.teamA"] && (
-          <p className={styles.error}>{errors["score.teamA"].message}</p>
+        {errors.score?.teamA && (
+          <p className={styles.error}>{errors.score.teamA.message}</p>
         )}
       </div>
 
-      {/* Team B Score */}
       <div className={styles.field}>
         <label htmlFor="teamBScore" className={styles.label}>
           Team B Score
@@ -151,13 +201,11 @@ const UpdateMatchForm = () => {
         <input
           type="number"
           id="teamBScore"
-          className={`${styles.input} ${
-            errors["score.teamB"] ? styles.errorInput : ""
-          }`}
+          className={styles.input}
           {...register("score.teamB")}
         />
-        {errors["score.teamB"] && (
-          <p className={styles.error}>{errors["score.teamB"].message}</p>
+        {errors.score?.teamB && (
+          <p className={styles.error}>{errors.score.teamB.message}</p>
         )}
       </div>
 
@@ -171,7 +219,7 @@ const UpdateMatchForm = () => {
           className={styles.select}
           {...register("playerOfTheMatch")}
         >
-          <option value="">Select Player of the Match</option>
+          <option value="">Select Player</option>
           {players.map((player) => (
             <option key={player.id} value={player.id}>
               {player.name}
@@ -190,7 +238,7 @@ const UpdateMatchForm = () => {
           className={styles.select}
           {...register("goalOfTheMatch")}
         >
-          <option value="">Select Goal of the Match</option>
+          <option value="">Select Player</option>
           {players.map((player) => (
             <option key={player.id} value={player.id}>
               {player.name}
@@ -199,7 +247,6 @@ const UpdateMatchForm = () => {
         </select>
       </div>
 
-      {/* Submit Button */}
       <button type="submit" className={styles.button}>
         Update Matches
       </button>
