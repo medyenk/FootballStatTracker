@@ -1,9 +1,19 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import players from "./data/players.json"; // Import player data
-import styles from "./styles/matches.module.scss"; // Import SCSS file
+import players from "../../data/players.json";
 import { useState } from "react";
+
+import styles from "./styles.module.scss"; // Adjust the path according to your project structure
+
+type FormData = {
+  date: Date;
+  teamA: number[];
+  teamB: number[];
+  score: { teamA: number; teamB: number };
+  playerOfTheMatch: string;
+  goalOfTheMatch: string;
+};
 
 const schema = yup.object().shape({
   date: yup
@@ -12,10 +22,12 @@ const schema = yup.object().shape({
     .min(new Date("2025-01-01"), "Date must be after 2025-01-01"),
   teamA: yup
     .array()
+    .required("Team A is required")
     .min(8, "At least 8 players must be selected for Team A")
     .max(8, "Only 8 players can be selected for Team A"),
   teamB: yup
     .array()
+    .required("Team B is required")
     .min(8, "At least 8 players must be selected for Team B")
     .max(8, "Only 8 players can be selected for Team B"),
   score: yup.object().shape({
@@ -43,16 +55,19 @@ const UpdateMatchForm = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
+      date: new Date(),
       teamA: [],
       teamB: [],
       score: { teamA: 0, teamB: 0 },
+      playerOfTheMatch: "",
+      goalOfTheMatch: "",
     },
   });
 
-  const [selectedTeamA, setSelectedTeamA] = useState([]);
-  const [selectedTeamB, setSelectedTeamB] = useState([]);
+  const [selectedTeamA, setSelectedTeamA] = useState<number[]>([]);
+  const [selectedTeamB, setSelectedTeamB] = useState<number[]>([]);
 
-  const handleTeamSelection = (team, playerId) => {
+  const handleTeamSelection = (team: string, playerId: number) => {
     let updatedTeam = [...(team === "teamA" ? selectedTeamA : selectedTeamB)];
 
     if (updatedTeam.includes(playerId)) {
@@ -70,7 +85,7 @@ const UpdateMatchForm = () => {
     }
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: FormData) => {
     // Determine the winner based on the score
     let winner = "draw";
     if (data.score.teamA > data.score.teamB) {
@@ -89,7 +104,7 @@ const UpdateMatchForm = () => {
           date: data.date,
           teamA: data.teamA.map(Number),
           teamB: data.teamB.map(Number),
-          winner: winner, // Automatically determined
+          winner: winner,
           potm: Number(data.playerOfTheMatch),
           gotm: Number(data.goalOfTheMatch),
           score: {

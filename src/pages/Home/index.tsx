@@ -1,9 +1,23 @@
+import React from "react";
 import { useEffect, useState } from "react";
+import players from "../../data/players.json";
+
+interface Match {
+  id: number;
+  date: string;
+  winner: string;
+  score: {
+    teamA: number;
+    teamB: number;
+  };
+  potm: number;
+  gotm: number;
+}
 
 const Index = () => {
-  const [matches, setMatches] = useState([]);
+  const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch matches from the API
   useEffect(() => {
@@ -14,7 +28,11 @@ const Index = () => {
         const data = await response.json();
         setMatches(data);
       } catch (err) {
-        setError(err.message);
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred");
+        }
       } finally {
         setLoading(false);
       }
@@ -22,6 +40,11 @@ const Index = () => {
 
     fetchMatches();
   }, []);
+
+  const convertIDtoPlayerName = (id: number) => {
+    const player = players.find((player) => player.id === id);
+    return player ? player.name : "Unknown Player";
+  };
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
@@ -46,12 +69,15 @@ const Index = () => {
                 borderRadius: "5px",
               }}
             >
-              <strong>Date:</strong> {Date(match.date)} <br />
+              <strong>Date:</strong> {new Date(match.date).toLocaleDateString()}{" "}
+              <br />
               <strong>Winner:</strong> {match.winner.toUpperCase()} <br />
               <strong>Score:</strong> {match.score.teamA} - {match.score.teamB}{" "}
               <br />
-              <strong>Player of the Match:</strong> {match.potm} <br />
-              <strong>Goal of the Match:</strong> {match.gotm}
+              <strong>Player of the Match:</strong>{" "}
+              {convertIDtoPlayerName(match.potm)} <br />
+              <strong>Goal of the Match:</strong>{" "}
+              {convertIDtoPlayerName(match.gotm)} <br />
             </li>
           ))}
         </ul>

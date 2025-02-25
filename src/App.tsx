@@ -1,13 +1,15 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Matches from "./Matches"; // Import your Matches component
-import Index from "./index"; // Import your Index component
+import Matches from "./pages/Matches";
+import Home from "./pages/Home";
+import Navbar from "./components/Navbar/Navbar";
 
 const App = () => {
   return (
     <Router>
+      {/* <Navbar /> */}
       <Routes>
-        {/* Define routes */}
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<Home />} />
         <Route path="/matches" element={<Matches />} />
       </Routes>
     </Router>
