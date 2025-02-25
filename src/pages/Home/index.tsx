@@ -1,11 +1,23 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import players from "../../data/players.json";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Text,
+  Heading,
+  Button,
+  Box,
+} from "@chakra-ui/react";
 
 interface Match {
   id: number;
   date: string;
   winner: string;
+  teamA: number[];
+  teamB: number[];
   score: {
     teamA: number;
     teamB: number;
@@ -48,7 +60,9 @@ const Index = () => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1>Football Match Tracker</h1>
+      <Text fontSize="3xl" fontWeight="bold" marginBottom="20px">
+        Alperton Thursday Latest Match Results
+      </Text>
 
       {/* Show Loading State */}
       {loading && <p>Loading matches...</p>}
@@ -58,29 +72,62 @@ const Index = () => {
 
       {/* Display Matches */}
       {!loading && !error && matches.length > 0 ? (
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        <div>
           {matches.map((match) => (
-            <li
-              key={match.id}
-              style={{
-                border: "1px solid #ccc",
-                padding: "10px",
-                marginBottom: "10px",
-                borderRadius: "5px",
-              }}
-            >
-              <strong>Date:</strong> {new Date(match.date).toLocaleDateString()}{" "}
-              <br />
-              <strong>Winner:</strong> {match.winner.toUpperCase()} <br />
-              <strong>Score:</strong> {match.score.teamA} - {match.score.teamB}{" "}
-              <br />
-              <strong>Player of the Match:</strong>{" "}
-              {convertIDtoPlayerName(match.potm)} <br />
-              <strong>Goal of the Match:</strong>{" "}
-              {convertIDtoPlayerName(match.gotm)} <br />
-            </li>
+            <>
+              <Card.Root key={match.id} style={{ marginBottom: "20px" }}>
+                <CardHeader>
+                  <Heading as="h3" size="md">
+                    {new Date(match.date).toLocaleDateString()}
+                  </Heading>
+                </CardHeader>
+                <CardHeader>
+                  <Text fontWeight="bold">Team A</Text>
+                  {match.teamA
+                    .map((id) => convertIDtoPlayerName(id))
+                    .join(", ")}
+                </CardHeader>
+                <CardHeader>
+                  <Text fontWeight="bold">Team B</Text>
+                  {match.teamB
+                    .map((id) => convertIDtoPlayerName(id))
+                    .join(", ")}
+                </CardHeader>
+
+                <CardBody>
+                  <Text>
+                    <strong>Score:</strong> {match.score.teamA} -{" "}
+                    {match.score.teamB} <br />
+                    <strong>Player of the Match:</strong>{" "}
+                    {convertIDtoPlayerName(match.potm)} <br />
+                    <strong>Goal of the Match:</strong>{" "}
+                    {convertIDtoPlayerName(match.gotm)} <br />
+                  </Text>
+                </CardBody>
+              </Card.Root>
+            </>
+
+            // <li
+            //   key={match.id}
+            //   style={{
+            //     border: "1px solid #ccc",
+            //     padding: "10px",
+            //     marginBottom: "10px",
+            //     borderRadius: "5px",
+            //   }}
+            // >
+            //   <strong>Date:</strong> {new Date(match.date).toLocaleDateString()}{" "}
+            //   <br />
+            //   <strong>Winner:</strong> {match.winner.toUpperCase()} <br />
+            //   <strong>Score:</strong> {match.score.teamA} - {match.score.teamB}{" "}
+            //   <br />
+            //   <strong>Player of the Match:</strong>{" "}
+            //   {convertIDtoPlayerName(match.potm)} <br />
+            //   <strong>Goal of the Match:</strong>{" "}
+            //   {convertIDtoPlayerName(match.gotm)} <br />
+            // </li>
           ))}
-        </ul>
+        </div>
       ) : (
         !loading && <p>No matches found.</p>
       )}
