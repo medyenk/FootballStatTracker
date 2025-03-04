@@ -7,7 +7,7 @@
     "loss": 0,
     "motm": 2,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 2,
@@ -17,7 +17,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 3,
@@ -27,7 +27,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 4,
@@ -37,27 +37,27 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 5,
     "name": "Ameen",
-    "attended": 2,
+    "attended": 3,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 6,
     "name": "Awalah",
-    "attended": 2,
+    "attended": 3,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 7,
@@ -67,7 +67,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 8,
@@ -77,7 +77,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 9,
@@ -87,7 +87,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 10,
@@ -97,7 +97,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 11,
@@ -107,7 +107,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 12,
@@ -117,7 +117,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 13,
@@ -127,7 +127,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 14,
@@ -137,7 +137,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 15,
@@ -147,37 +147,37 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 16,
     "name": "Karan",
-    "attended": 0,
+    "attended": 1,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 17,
     "name": "Khaled",
-    "attended": 0,
+    "attended": 1,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 18,
     "name": "Mahdi",
-    "attended": 0,
+    "attended": 1,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 19,
@@ -187,7 +187,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 20,
@@ -197,7 +197,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 21,
@@ -207,47 +207,47 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 22,
     "name": "MoD",
-    "attended": 0,
+    "attended": 1,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 23,
     "name": "MoS",
-    "attended": 0,
+    "attended": 1,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 24,
     "name": "Nadir",
-    "attended": 2,
+    "attended": 3,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 25,
     "name": "Naj",
-    "attended": 2,
+    "attended": 3,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 2,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 26,
@@ -257,37 +257,37 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 27,
     "name": "OmarI",
-    "attended": 2,
+    "attended": 3,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 28,
     "name": "OmarM",
-    "attended": 2,
+    "attended": 3,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 29,
     "name": "OmarS",
-    "attended": 2,
+    "attended": 3,
     "win": 0,
     "loss": 0,
     "motm": 0,
-    "gotm": 0,
-    "draw": 1
+    "gotm": 1,
+    "draw": 2
   },
   {
     "id": 30,
@@ -295,9 +295,9 @@
     "attended": 2,
     "win": 0,
     "loss": 0,
-    "motm": 0,
+    "motm": 1,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 31,
@@ -307,7 +307,7 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 32,
@@ -317,46 +317,46 @@
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 33,
     "name": "Yousaf",
-    "attended": 0,
+    "attended": 1,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 34,
     "name": "Zack",
-    "attended": 0,
+    "attended": 1,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 35,
     "name": "Zain",
-    "attended": 0,
+    "attended": 1,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   },
   {
     "id": 36,
     "name": "Zion",
-    "attended": 0,
+    "attended": 1,
     "win": 0,
     "loss": 0,
     "motm": 0,
     "gotm": 0,
-    "draw": 1
+    "draw": 2
   }
 ]

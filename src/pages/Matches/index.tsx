@@ -1,16 +1,39 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import players from "../../data/players.json";
 import { useState } from "react";
+import { Field } from "@/components/ui/field";
+import {
+  NumberInputField,
+  NumberInputRoot,
+} from "@/components/ui/number-input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Radio, RadioGroup } from "@/components/ui/radio";
 
-import styles from "./styles.module.scss"; // Adjust the path according to your project structure
+import {
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+  SelectContent,
+  SelectItem,
+  createListCollection,
+  VStack,
+  Button,
+  Input,
+  CheckboxGroup,
+  Fieldset,
+  Box,
+  Stack,
+  HStack,
+} from "@chakra-ui/react";
 
 type FormData = {
   date: Date;
   teamA: number[];
   teamB: number[];
-  score: { teamA: number; teamB: number };
+  teamAScore: number;
+  teamBScore: number;
   playerOfTheMatch: string;
   goalOfTheMatch: string;
 };
@@ -30,16 +53,14 @@ const schema = yup.object().shape({
     .required("Team B is required")
     .min(8, "At least 8 players must be selected for Team B")
     .max(8, "Only 8 players can be selected for Team B"),
-  score: yup.object().shape({
-    teamA: yup
-      .number()
-      .required("Score for Team A is required")
-      .min(0, "Score cannot be negative"),
-    teamB: yup
-      .number()
-      .required("Score for Team B is required")
-      .min(0, "Score cannot be negative"),
-  }),
+  teamAScore: yup
+    .number()
+    .required("Score for Team A is required")
+    .min(0, "Score cannot be negative"),
+  teamBScore: yup
+    .number()
+    .required("Score for Team B is required")
+    .min(0, "Score cannot be negative"),
   playerOfTheMatch: yup.string().required("Player of the Match is required"),
   goalOfTheMatch: yup.string().required("Goal of the Match is required"),
 });
@@ -58,7 +79,8 @@ const UpdateMatchForm = () => {
       date: new Date(),
       teamA: [],
       teamB: [],
-      score: { teamA: 0, teamB: 0 },
+      teamAScore: 0,
+      teamBScore: 0,
       playerOfTheMatch: "",
       goalOfTheMatch: "",
     },
@@ -88,9 +110,9 @@ const UpdateMatchForm = () => {
   const onSubmit = async (data: FormData) => {
     // Determine the winner based on the score
     let winner = "draw";
-    if (data.score.teamA > data.score.teamB) {
+    if (data.teamAScore > data.teamBScore) {
       winner = "teamA";
-    } else if (data.score.teamA < data.score.teamB) {
+    } else if (data.teamAScore < data.teamBScore) {
       winner = "teamB";
     }
 
@@ -107,10 +129,9 @@ const UpdateMatchForm = () => {
           winner: winner,
           potm: Number(data.playerOfTheMatch),
           gotm: Number(data.goalOfTheMatch),
-          score: {
-            teamA: Number(data.score.teamA),
-            teamB: Number(data.score.teamB),
-          },
+
+          teamAScore: Number(data.teamAScore),
+          teamBScore: Number(data.teamBScore),
         }),
       });
 
@@ -127,145 +148,175 @@ const UpdateMatchForm = () => {
     }
   };
 
+  const playersCollection = createListCollection({
+    items: players.map((player) => ({
+      label: player.name,
+      value: player.id,
+    })),
+  });
+
+  console.log("data", getValues());
+
   return (
-    <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-      <h1 className={styles.title}>Update Match</h1>
+    <VStack gap={4} padding={4} width="100%">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <h1>Update Match</h1>
 
-      {/* Date Field */}
-      <div className={styles.field}>
-        <label htmlFor="date" className={styles.label}>
-          Match Date
-        </label>
-        <input
-          type="date"
-          id="date"
-          className={styles.input}
-          {...register("date")}
-        />
-        {errors.date && <p className={styles.error}>{errors.date.message}</p>}
-      </div>
+        <Field>
+          <label htmlFor="date">Match Date</label>
+          <Input type="date" id="date" {...register("date")} />
+          {errors.date && <p>{errors.date.message}</p>}
+        </Field>
 
-      {/* Team A Selection */}
-      <div className={styles.field}>
-        <label className={styles.label}>Select Players for Team A</label>
-        <div className={styles.checkboxGroup}>
-          {players.map((player) => (
-            <div key={player.id} className={styles.checkboxField}>
-              <input
-                type="checkbox"
-                id={`teamA-${player.id}`}
-                checked={selectedTeamA.includes(player.id)}
-                onChange={() => handleTeamSelection("teamA", player.id)}
-              />
-              <label
-                htmlFor={`teamA-${player.id}`}
-                className={styles.checkboxLabel}
-              >
-                {player.name}
-              </label>
-            </div>
-          ))}
-        </div>
-        {errors.teamA && <p className={styles.error}>{errors.teamA.message}</p>}
-      </div>
+        <Fieldset.Root>
+          <CheckboxGroup name="teamA">
+            <Fieldset.Legend>Team A</Fieldset.Legend>
+            <Box display={"flex"} flexWrap={"wrap"} gap={2}>
+              {players.map((player) => (
+                <Checkbox
+                  key={player.id}
+                  value={player.id.toString()}
+                  onChange={(e) => handleTeamSelection("teamA", player.id)}
+                  checked={selectedTeamA.includes(player.id)}
+                >
+                  {player.name}
+                </Checkbox>
+              ))}
+            </Box>
+          </CheckboxGroup>
+        </Fieldset.Root>
 
-      {/* Team B Selection */}
-      <div className={styles.field}>
-        <label className={styles.label}>Select Players for Team B</label>
-        <div className={styles.checkboxGroup}>
-          {players.map((player) => (
-            <div key={player.id} className={styles.checkboxField}>
-              <input
-                type="checkbox"
-                id={`teamB-${player.id}`}
-                checked={selectedTeamB.includes(player.id)}
-                onChange={() => handleTeamSelection("teamB", player.id)}
-              />
-              <label
-                htmlFor={`teamB-${player.id}`}
-                className={styles.checkboxLabel}
-              >
-                {player.name}
-              </label>
-            </div>
-          ))}
-        </div>
-        {errors.teamB && <p className={styles.error}>{errors.teamB.message}</p>}
-      </div>
+        <Fieldset.Root>
+          <CheckboxGroup name="teamB">
+            <Fieldset.Legend>Team B</Fieldset.Legend>
+            <Box display="flex" flexWrap="wrap" gap={2}>
+              {players.map((player) => (
+                <Checkbox
+                  key={player.id}
+                  value={player.id.toString()}
+                  onChange={(e) => handleTeamSelection("teamB", player.id)}
+                  checked={selectedTeamB.includes(player.id)}
+                >
+                  {player.name}
+                </Checkbox>
+              ))}
+            </Box>
+          </CheckboxGroup>
+        </Fieldset.Root>
 
-      {/* Score Fields */}
-      <div className={styles.field}>
-        <label htmlFor="teamAScore" className={styles.label}>
-          Team A Score
-        </label>
-        <input
-          type="number"
-          id="teamAScore"
-          className={styles.input}
-          {...register("score.teamA")}
-        />
-        {errors.score?.teamA && (
-          <p className={styles.error}>{errors.score.teamA.message}</p>
-        )}
-      </div>
-
-      <div className={styles.field}>
-        <label htmlFor="teamBScore" className={styles.label}>
-          Team B Score
-        </label>
-        <input
-          type="number"
-          id="teamBScore"
-          className={styles.input}
-          {...register("score.teamB")}
-        />
-        {errors.score?.teamB && (
-          <p className={styles.error}>{errors.score.teamB.message}</p>
-        )}
-      </div>
-
-      {/* Player of the Match */}
-      <div className={styles.field}>
-        <label htmlFor="playerOfTheMatch" className={styles.label}>
-          Player of the Match
-        </label>
-        <select
-          id="playerOfTheMatch"
-          className={styles.select}
-          {...register("playerOfTheMatch")}
+        <Field
+          label="Team A Score"
+          invalid={!!errors.teamAScore}
+          errorText={errors.teamAScore?.message}
         >
-          <option value="">Select Player</option>
-          {players.map((player) => (
-            <option key={player.id} value={player.id}>
-              {player.name}
-            </option>
-          ))}
-        </select>
-      </div>
+          <Controller
+            name="teamAScore"
+            control={control}
+            render={({ field }) => (
+              <NumberInputRoot
+                name={field.name}
+                value={field.value?.toString()}
+                onValueChange={({ value }) => {
+                  field.onChange(value);
+                }}
+              >
+                <NumberInputField onBlur={field.onBlur} />
+              </NumberInputRoot>
+            )}
+          />
+        </Field>
 
-      {/* Goal of the Match */}
-      <div className={styles.field}>
-        <label htmlFor="goalOfTheMatch" className={styles.label}>
-          Goal of the Match
-        </label>
-        <select
-          id="goalOfTheMatch"
-          className={styles.select}
-          {...register("goalOfTheMatch")}
+        <Field
+          label="Team B Score"
+          invalid={!!errors.teamBScore}
+          errorText={errors.teamBScore?.message}
         >
-          <option value="">Select Player</option>
-          {players.map((player) => (
-            <option key={player.id} value={player.id}>
-              {player.name}
-            </option>
-          ))}
-        </select>
-      </div>
+          <Controller
+            name="teamBScore"
+            control={control}
+            render={({ field }) => (
+              <NumberInputRoot
+                name={field.name}
+                value={field.value?.toString()}
+                onValueChange={({ value }) => {
+                  field.onChange(value);
+                }}
+              >
+                <NumberInputField onBlur={field.onBlur} />
+              </NumberInputRoot>
+            )}
+          />
+        </Field>
 
-      <button type="submit" className={styles.button}>
-        Update Matches
-      </button>
-    </form>
+        <Fieldset.Root invalid={!!errors.playerOfTheMatch}>
+          <Fieldset.Legend>Player of the Match</Fieldset.Legend>
+          <Controller
+            name="playerOfTheMatch"
+            control={control}
+            render={({ field }) => (
+              <RadioGroup
+                name={field.name}
+                value={field.value}
+                onValueChange={({ value }) => field.onChange(value)}
+              >
+                <HStack gap="6" display="flex" flexWrap="wrap">
+                  {players.map((player) => (
+                    <Radio
+                      key={player.id}
+                      value={player.id.toString()}
+                      inputProps={{ onBlur: field.onBlur }}
+                    >
+                      {player.name}
+                    </Radio>
+                  ))}
+                </HStack>
+              </RadioGroup>
+            )}
+          />
+
+          {errors.playerOfTheMatch && (
+            <Fieldset.ErrorText>
+              {errors.playerOfTheMatch?.message}
+            </Fieldset.ErrorText>
+          )}
+        </Fieldset.Root>
+
+        <Fieldset.Root invalid={!!errors.goalOfTheMatch}>
+          <Fieldset.Legend>Goal of the Match</Fieldset.Legend>
+          <Controller
+            name="goalOfTheMatch"
+            control={control}
+            render={({ field }) => (
+              <RadioGroup
+                name={field.name}
+                value={field.value}
+                onValueChange={({ value }) => field.onChange(value)}
+              >
+                <HStack gap="6" display="flex" flexWrap="wrap">
+                  {players.map((player) => (
+                    <Radio
+                      key={player.id}
+                      value={player.id.toString()}
+                      inputProps={{ onBlur: field.onBlur }}
+                    >
+                      {player.name}
+                    </Radio>
+                  ))}
+                </HStack>
+              </RadioGroup>
+            )}
+          />
+
+          {errors.goalOfTheMatch && (
+            <Fieldset.ErrorText>
+              {errors.goalOfTheMatch?.message}
+            </Fieldset.ErrorText>
+          )}
+        </Fieldset.Root>
+
+        <Button type="submit">Update Matches</Button>
+      </form>
+    </VStack>
   );
 };
 

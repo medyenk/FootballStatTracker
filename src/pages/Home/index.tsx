@@ -18,10 +18,8 @@ interface Match {
   winner: string;
   teamA: number[];
   teamB: number[];
-  score: {
-    teamA: number;
-    teamB: number;
-  };
+  teamAScore: number;
+  teamBScore: number;
   potm: number;
   gotm: number;
 }
@@ -96,8 +94,8 @@ const Index = () => {
 
                 <CardBody>
                   <Text>
-                    <strong>Score:</strong> {match.score.teamA} -{" "}
-                    {match.score.teamB} <br />
+                    <strong>Score:</strong> {match.teamAScore} -{" "}
+                    {match.teamBScore} <br />
                     <strong>Player of the Match:</strong>{" "}
                     {convertIDtoPlayerName(match.potm)} <br />
                     <strong>Goal of the Match:</strong>{" "}
@@ -106,26 +104,6 @@ const Index = () => {
                 </CardBody>
               </Card.Root>
             </>
-
-            // <li
-            //   key={match.id}
-            //   style={{
-            //     border: "1px solid #ccc",
-            //     padding: "10px",
-            //     marginBottom: "10px",
-            //     borderRadius: "5px",
-            //   }}
-            // >
-            //   <strong>Date:</strong> {new Date(match.date).toLocaleDateString()}{" "}
-            //   <br />
-            //   <strong>Winner:</strong> {match.winner.toUpperCase()} <br />
-            //   <strong>Score:</strong> {match.score.teamA} - {match.score.teamB}{" "}
-            //   <br />
-            //   <strong>Player of the Match:</strong>{" "}
-            //   {convertIDtoPlayerName(match.potm)} <br />
-            //   <strong>Goal of the Match:</strong>{" "}
-            //   {convertIDtoPlayerName(match.gotm)} <br />
-            // </li>
           ))}
         </div>
       ) : (
