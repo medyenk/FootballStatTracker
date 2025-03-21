@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "api/update-players.ts": {
-      "runtime": "@vercel/node"
-    }
-  },
   "routes": [
     {
       "src": "/api/update-players",
