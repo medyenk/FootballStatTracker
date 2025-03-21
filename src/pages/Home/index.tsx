@@ -29,7 +29,7 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch matches from the API
+
   useEffect(() => {
     const fetchMatches = async () => {
       try {
