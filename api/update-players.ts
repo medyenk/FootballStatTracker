@@ -2,11 +2,11 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@sanity/client";
 
 const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID,  // 🔥 Use this instead of VITE_SANITY_PROJECT_ID
+  projectId: process.env.VITE_SANITY_PROJECT_ID,
   dataset: "production",
-  token: process.env.SANITY_WRITE_TOKEN,
+  token: process.env.VITE_SANITY_WRITE_TOKEN,
   useCdn: false,
-  apiVersion: "2024-03-19"
+  apiVersion: "2024-03-19",
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
