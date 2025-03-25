@@ -1,19 +1,14 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { defaultSystem } from "@chakra-ui/react";
-import "./index.css";
-import App from "./App";
-import { Provider } from "./components/ui/provider";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { MantineProvider } from '@mantine/core';
+import '@mantine/core/styles.css';
 
-const rootElement = document.getElementById("root");
-if (rootElement) {
-  createRoot(rootElement).render(
-    <StrictMode>
-      <Provider>
-        <App />
-      </Provider>
-    </StrictMode>
-  );
-} else {
-  console.error("Root element not found");
-}
+import App from './App'; // Your routing logic
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <MantineProvider>
+      <App />
+    </MantineProvider>
+  </React.StrictMode>
+);

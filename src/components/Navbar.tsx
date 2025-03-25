@@ -1,10 +1,4 @@
 import { Link as RouterLink } from "react-router-dom";
-import {
-  Box,
-  Flex,
-  HStack,
-  Button,
-} from "@chakra-ui/react";
 
 interface NavLink {
   name: string;

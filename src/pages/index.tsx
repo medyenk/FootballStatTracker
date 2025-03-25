@@ -1,16 +1,4 @@
-import React from "react";
 import { useEffect, useState } from "react";
-import players from "../../data/players.json";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Text,
-  Heading,
-  Button,
-  Box,
-} from "@chakra-ui/react";
 
 interface Match {
   id: number;
