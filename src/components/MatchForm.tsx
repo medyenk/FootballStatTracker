@@ -11,14 +11,12 @@ import {
   Stack,
   Title,
 } from "@mantine/core";
-import { DateInput, DatePickerInput } from "@mantine/dates";
+import { DateInput } from "@mantine/dates";
 import { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 
 const schema = z.object({
-  date: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Invalid date format",
-  }),
-
+  date: z.date({ required_error: "Date is required" }),
   teamA: z
     .array(z.string())
     .min(8, "Exactly 8 players must be selected for Team A")
@@ -56,7 +54,7 @@ const MatchForm = () => {
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      date: new Date().toISOString().slice(0, 10),
+      date: new Date(),
       teamA: [],
       teamB: [],
       teamAScore: 0,
@@ -70,10 +68,22 @@ const MatchForm = () => {
     { label: string; value: string }[]
   >([]);
 
+  const supabase = createClient(
+    import.meta.env.VITE_SUPABASE_URL!,
+    import.meta.env.VITE_SUPABASE_ANON_KEY!
+  );
+
   useEffect(() => {
     const fetchPlayers = async () => {
-      const res = await fetch("/api/players");
-      const data: Player[] = await res.json();
+      const { data, error } = await supabase
+        .from("Player")
+        .select("id, name")
+        .order("name", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching players:", error.message);
+        return;
+      }
 
       const formatted = data.map((p) => ({
         label: p.name,
@@ -81,52 +91,84 @@ const MatchForm = () => {
       }));
 
       setPlayerOptions(formatted);
-      console.log("Players fetched successfully:", formatted);
+      console.log("Players fetched from Supabase:", formatted);
     };
 
     fetchPlayers();
   }, []);
 
   const onSubmit = async (data: FormData) => {
+
+    
     const date = new Date(data.date);
 
-    let winner = "draw";
-    if (data.teamAScore > data.teamBScore) {
-      winner = "teamA";
-    } else if (data.teamAScore < data.teamBScore) {
-      winner = "teamB";
+    const teamA = data.teamA.map(Number);
+    const teamB = data.teamB.map(Number);
+    const teamAScore = data.teamAScore;
+    const teamBScore = data.teamBScore;
+    const potmId = Number(data.playerOfTheMatch);
+    const gotmId = Number(data.goalOfTheMatch);
+
+    const winner =
+      teamAScore > teamBScore
+        ? "teamA"
+        : teamBScore > teamAScore
+        ? "teamB"
+        : "draw";
+
+    // 1. Insert match
+    const { error: insertError } = await supabase.from("Match").insert([
+      {
+        date,
+        teamA,
+        teamB,
+        teamAScore,
+        teamBScore,
+        potmId,
+        gotmId,
+        winner,
+      },
+    ]);
+
+    if (insertError) {
+      console.error("Error inserting match:", insertError);
+      alert("Failed to submit match.");
+      return;
     }
 
-    try {
-      const response = await fetch("http://localhost:5001/matches", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          date: date,
-          teamA: data.teamA.map(Number),
-          teamB: data.teamB.map(Number),
-          winner: winner,
-          potm: Number(data.playerOfTheMatch),
-          gotm: Number(data.goalOfTheMatch),
+    // 2. Update all players
+    const allPlayers = [...teamA, ...teamB];
 
-          teamAScore: Number(data.teamAScore),
-          teamBScore: Number(data.teamBScore),
-        }),
+    for (const playerId of allPlayers) {
+      const isTeamA = teamA.includes(playerId);
+      const isWinner =
+        (isTeamA && winner === "teamA") || (!isTeamA && winner === "teamB");
+      const isLoser =
+        (isTeamA && winner === "teamB") || (!isTeamA && winner === "teamA");
+      const isDraw = winner === "draw";
+
+      await supabase.rpc("increment_player_stats", {
+        player_id_input: playerId,
+        attended_inc: 1,
+        win_inc: isWinner ? 1 : 0,
+        loss_inc: isLoser ? 1 : 0,
+        draw_inc: isDraw ? 1 : 0,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to add match");
-      }
-
-      const result = await response.json();
-      console.log("Match added successfully:", result);
-      alert("Match added successfully!");
-    } catch (error) {
-      console.error("Error submitting match:", error);
-      alert("Error adding match. Please try again.");
     }
+
+    // 3. Update MOTM and GOTM
+    await Promise.all([
+      supabase.rpc("increment_player_stats", {
+        player_id_input: potmId,
+        motm_inc: 1,
+      }),
+      supabase.rpc("increment_player_stats", {
+        player_id_input: gotmId,
+        gotm_inc: 1,
+      }),
+    ]);
+
+    alert("Match and player stats updated successfully!");
   };
 
   return (
