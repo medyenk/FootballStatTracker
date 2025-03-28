@@ -14,17 +14,17 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
+import { useTimeout } from "@mantine/hooks";
 
 const schema = z.object({
   date: z.date({ required_error: "Date is required" }),
   teamA: z
     .array(z.string())
-    .min(8, "Exactly 8 players must be selected for Team A")
     .max(8, "Exactly 8 players must be selected for Team A"),
 
   teamB: z
     .array(z.string())
-    .min(8, "Exactly 8 players must be selected for Team B")
     .max(8, "Exactly 8 players must be selected for Team B"),
 
   teamAScore: z
@@ -41,12 +41,9 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-type Player = {
-  id: number;
-  name: string;
-};
-
 const MatchForm = () => {
+  const navigate = useNavigate();
+
   const {
     handleSubmit,
     control,
@@ -98,8 +95,6 @@ const MatchForm = () => {
   }, []);
 
   const onSubmit = async (data: FormData) => {
-
-    
     const date = new Date(data.date);
 
     const teamA = data.teamA.map(Number);
@@ -138,7 +133,7 @@ const MatchForm = () => {
 
     // 2. Update all players
     const allPlayers = [...teamA, ...teamB];
-
+    const goalDiff = teamAScore - teamBScore;
     for (const playerId of allPlayers) {
       const isTeamA = teamA.includes(playerId);
       const isWinner =
@@ -147,12 +142,15 @@ const MatchForm = () => {
         (isTeamA && winner === "teamB") || (!isTeamA && winner === "teamA");
       const isDraw = winner === "draw";
 
+      const playerGoalDiff = isTeamA ? goalDiff : -goalDiff;
+
       await supabase.rpc("increment_player_stats", {
         player_id_input: playerId,
         attended_inc: 1,
         win_inc: isWinner ? 1 : 0,
         loss_inc: isLoser ? 1 : 0,
         draw_inc: isDraw ? 1 : 0,
+        goal_diff_inc: playerGoalDiff,
       });
     }
 
@@ -167,8 +165,11 @@ const MatchForm = () => {
         gotm_inc: 1,
       }),
     ]);
-
     alert("Match and player stats updated successfully!");
+    
+    setTimeout(() => {
+      navigate("/admin"); 
+    }, 2000);
   };
 
   return (

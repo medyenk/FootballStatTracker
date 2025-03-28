@@ -9,8 +9,9 @@ import {
   Badge,
   Flex,
   Paper,
+  Box,
 } from "@mantine/core";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
 
 interface Match {
@@ -35,6 +36,7 @@ type Player = {
   motm: number;
   gotm: number;
   cleansheet: number;
+  goalDifference: number;
 };
 
 const Index = () => {
@@ -42,11 +44,6 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
-
-  const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    import.meta.env.VITE_SUPABASE_ANON_KEY!
-  );
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -78,10 +75,6 @@ const Index = () => {
     return player ? player.name : "Unknown Player";
   };
 
-  const formatWinner = (winner: string) => {
-    if (winner === "draw") return "Draw";
-    return `${winner.charAt(0).toUpperCase()} wins`;
-  };
 
   return (
     <Stack p="lg">
@@ -105,85 +98,107 @@ const Index = () => {
               <Card.Section withBorder inheritPadding py="xs">
                 <Title order={4}>
                   Match Result for{" "}
-                  {new Date(match.date).toLocaleDateString("en-GB")} -{" "}
-                  {formatWinner(match.winner)}
+                  {new Date(match.date).toLocaleDateString("en-GB")}
                 </Title>
               </Card.Section>
               <Card.Section withBorder inheritPadding py="xs">
-                <SimpleGrid cols={2}>
-                  <Paper withBorder p="md" radius="md">
-                    <Stack gap="0">
-                      <Divider mb="sm" label="Team A" labelPosition="center" />
-                      <Flex
-                        wrap="wrap"
-                        gap={5}
-                        dir="column"
-                        justify="center"
-                        align="center"
-                      >
-                        {match.teamA.map((id) => (
-                          <Badge size="lg">{convertIdToPlayerName(id)}</Badge>
-                        ))}
-                      </Flex>
-                    </Stack>
-                  </Paper>
+                  <SimpleGrid cols={2}>
+                    <Paper withBorder p="md" radius="md">
+                      <Stack gap="0">
+                        <Divider
+                          mb="sm"
+                          label="Team A"
+                          labelPosition="center"
+                        />
+                        <Flex
+                          wrap="wrap"
+                          gap={5}
+                          dir="column"
+                          justify="center"
+                          align="center"
+                          h="100%"
+                        >
+                          {match.teamA.map((id) => (
+                            <Badge
+                              key={id}
+                              size="lg"
+                              color="teal"
+                              variant="light"
+                            >
+                              {convertIdToPlayerName(id)}
+                            </Badge>
+                          ))}
+                        </Flex>
+                      </Stack>
+                    </Paper>
 
-                  <Paper withBorder p="md" radius="md">
-                    <Stack gap="0">
-                      <Divider mb="sm" label="Team B" labelPosition="center" />
-                      <Flex wrap="wrap" gap={5} justify="center">
-                        {match.teamB.map((id) => (
-                          <Badge size="lg">{convertIdToPlayerName(id)}</Badge>
-                        ))}
-                      </Flex>
-                    </Stack>
-                  </Paper>
-                </SimpleGrid>
+                    <Paper withBorder p="md" radius="md">
+                      <Stack gap="0">
+                        <Divider
+                          mb="sm"
+                          label="Team B"
+                          labelPosition="center"
+                        />
+                        <Flex wrap="wrap" gap={5} justify="center">
+                          {match.teamB.map((id) => (
+                            <Badge
+                              key={id}
+                              size="lg"
+                              color="teal"
+                              variant="light"
+                            >
+                              {convertIdToPlayerName(id)}
+                            </Badge>
+                          ))}
+                        </Flex>
+                      </Stack>
+                    </Paper>
+                  </SimpleGrid>
 
                 <Divider my="sm" />
 
                 <SimpleGrid cols={3}>
-                  <Paper p="md" radius="md" withBorder>
+                  <Paper p="md" radius="md" withBorder bg="teal.9">
                     <Flex
                       direction="column"
                       align="center"
                       justify="center"
                       h="100%"
                     >
-                      <Text size="sm" fw={500}>
+                      <Text size="sm" fw={500} c="white">
                         POTM
                       </Text>
-                      <Text size="lg" fw={700}>
+                      <Text size="lg" fw={700} c="white">
                         {convertIdToPlayerName(match.potmId)}
                       </Text>
                     </Flex>
                   </Paper>
-                  <Paper p="md" radius="md" withBorder>
+                  <Paper p="md" radius="md" withBorder bg="teal.9">
                     <Flex
                       direction="column"
                       align="center"
                       justify="center"
                       h="100%"
                     >
-                      <Text size="sm" fw={500}>
+                      <Text size="sm" fw={500} c="white">
                         Score
                       </Text>
-                      <Text size="lg" fw={700}>
+                      <Text size="lg" fw={700} c="white">
                         {match.teamAScore} - {match.teamBScore}
                       </Text>
                     </Flex>
                   </Paper>
-                  <Paper p="md" radius="md" withBorder>
+                  <Paper p="md" radius="md" withBorder bg="teal.9">
                     <Flex
                       direction="column"
                       align="center"
                       justify="center"
                       h="100%"
                     >
-                      <Text size="sm" fw={500}>
+                      <Text size="sm" fw={500} c="white">
                         GOTM
                       </Text>
-                      <Text size="lg" fw={700}>
+                      <Text size="lg" fw={700} c="white">
                         {convertIdToPlayerName(match.gotmId)}
                       </Text>
                     </Flex>
