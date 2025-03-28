@@ -13,31 +13,7 @@ import {
 } from "@mantine/core";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
-
-interface Match {
-  id: number;
-  date: string;
-  winner: string;
-  teamA: number[];
-  teamB: number[];
-  teamAScore: number;
-  teamBScore: number;
-  potmId: number;
-  gotmId: number;
-}
-
-type Player = {
-  id: number;
-  name: string;
-  attended: number;
-  win: number;
-  loss: number;
-  draw: number;
-  motm: number;
-  gotm: number;
-  cleansheet: number;
-  goalDifference: number;
-};
+import { Match, Player } from "@/types/types";
 
 const Index = () => {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -75,7 +51,6 @@ const Index = () => {
     return player ? player.name : "Unknown Player";
   };
 
-
   return (
     <Stack p="lg">
       <Title order={1} ta="center">
@@ -102,58 +77,50 @@ const Index = () => {
                 </Title>
               </Card.Section>
               <Card.Section withBorder inheritPadding py="xs">
-                  <SimpleGrid cols={2}>
-                    <Paper withBorder p="md" radius="md">
-                      <Stack gap="0">
-                        <Divider
-                          mb="sm"
-                          label="Team A"
-                          labelPosition="center"
-                        />
-                        <Flex
-                          wrap="wrap"
-                          gap={5}
-                          dir="column"
-                          justify="center"
-                          align="center"
-                          h="100%"
-                        >
-                          {match.teamA.map((id) => (
-                            <Badge
-                              key={id}
-                              size="lg"
-                              color="teal"
-                              variant="light"
-                            >
-                              {convertIdToPlayerName(id)}
-                            </Badge>
-                          ))}
-                        </Flex>
-                      </Stack>
-                    </Paper>
+                <SimpleGrid cols={2}>
+                  <Paper withBorder p="md" radius="md">
+                    <Stack gap="0">
+                      <Divider mb="sm" label="Team A" labelPosition="center" />
+                      <Flex
+                        wrap="wrap"
+                        gap={5}
+                        dir="column"
+                        justify="center"
+                        align="center"
+                        h="100%"
+                      >
+                        {match.teamA.map((id) => (
+                          <Badge
+                            key={id}
+                            size="lg"
+                            color="teal"
+                            variant="light"
+                          >
+                            {convertIdToPlayerName(id)}
+                          </Badge>
+                        ))}
+                      </Flex>
+                    </Stack>
+                  </Paper>
 
-                    <Paper withBorder p="md" radius="md">
-                      <Stack gap="0">
-                        <Divider
-                          mb="sm"
-                          label="Team B"
-                          labelPosition="center"
-                        />
-                        <Flex wrap="wrap" gap={5} justify="center">
-                          {match.teamB.map((id) => (
-                            <Badge
-                              key={id}
-                              size="lg"
-                              color="teal"
-                              variant="light"
-                            >
-                              {convertIdToPlayerName(id)}
-                            </Badge>
-                          ))}
-                        </Flex>
-                      </Stack>
-                    </Paper>
-                  </SimpleGrid>
+                  <Paper withBorder p="md" radius="md">
+                    <Stack gap="0">
+                      <Divider mb="sm" label="Team B" labelPosition="center" />
+                      <Flex wrap="wrap" gap={5} justify="center">
+                        {match.teamB.map((id) => (
+                          <Badge
+                            key={id}
+                            size="lg"
+                            color="teal"
+                            variant="light"
+                          >
+                            {convertIdToPlayerName(id)}
+                          </Badge>
+                        ))}
+                      </Flex>
+                    </Stack>
+                  </Paper>
+                </SimpleGrid>
 
                 <Divider my="sm" />
 
