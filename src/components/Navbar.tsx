@@ -12,7 +12,6 @@ import { useDisclosure } from "@mantine/hooks";
 const links = [
   { label: "Home", href: "/" },
   { label: "Leaderboard", href: "/leaderboard" },
-  { label: "Admin", href: "/admin" },
 ];
 
 const Navbar = () => {
