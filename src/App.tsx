@@ -8,7 +8,7 @@ import Leaderboard from "./pages/leaderboard";
 const App = () => {
   return (
     <Router>
-      {/* <Navbar /> */}
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/admin" element={<Admin />} />

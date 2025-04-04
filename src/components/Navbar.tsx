@@ -1,29 +1,68 @@
-import { Link as RouterLink } from "react-router-dom";
+import {
+  Group,
+  Burger,
+  Drawer,
+  Button,
+  Stack,
+  Box,
+  Title,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 
-interface NavLink {
-  name: string;
-  path: string;
-}
+const links = [
+  { label: "Home", href: "/" },
+  { label: "Leaderboard", href: "/leaderboard" },
+  { label: "Admin", href: "/admin" },
+];
 
-const Links: NavLink[] = [{ name: "Home", path: "/" }];
+const Navbar = () => {
+  const [opened, { toggle, close }] = useDisclosure(false);
 
-const Navbar: React.FC = () => {
   return (
-    <Box bg="gray.900" px={4}>
-      <Flex h={16} alignItems="center" justifyContent="space-between">
-        <Box fontWeight="bold" color="white">
-          Football Stats
-        </Box>
-        <HStack>
-          {Links.map((link) => (
-            <RouterLink to={link.path} key={link.name}>
-              <Button variant="ghost" color="white">
-                {link.name}
-              </Button>
-            </RouterLink>
+    <Box p="md" bg="dark.7">
+      <Group justify="space-between">
+        <Title order={3} c="teal.3">
+          Alperton Thursdays
+        </Title>
+        <Group visibleFrom="sm">
+          {links.map((link) => (
+            <Button
+              key={link.href}
+              component="a"
+              href={link.href}
+              variant="subtle"
+              color="teal"
+            >
+              {link.label}
+            </Button>
           ))}
-        </HStack>
-      </Flex>
+        </Group>
+        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" />
+      </Group>
+
+      <Drawer
+        opened={opened}
+        onClose={close}
+        title="Navigation"
+        padding="md"
+        size="xs"
+        hiddenFrom="sm"
+      >
+        <Stack>
+          {links.map((link) => (
+            <Button
+              key={link.href}
+              component="a"
+              href={link.href}
+              variant="light"
+              color="teal"
+              onClick={close}
+            >
+              {link.label}
+            </Button>
+          ))}
+        </Stack>
+      </Drawer>
     </Box>
   );
 };
